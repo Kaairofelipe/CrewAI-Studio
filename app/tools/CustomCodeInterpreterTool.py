@@ -137,7 +137,11 @@ class CustomCodeInterpreterTool(BaseTool):
         return exec_result.output.decode("utf-8")
     
     def _run_script(self, run_script: str,libraries_used: str) -> str:
-        with open(f"{self.workspace_dir}/{run_script}", "r") as file:
+        base_real = os.path.realpath(self.workspace_dir)
+        target_real = os.path.realpath(f"{self.workspace_dir}/{run_script}")
+        if os.path.commonpath([base_real, target_real]) != base_real:
+            raise ValueError("Invalid file path")
+        with open(target_real, "r") as file:
             code = file.read()
             return self.run_code_in_docker(code, libraries_used)
 
