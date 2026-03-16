@@ -271,10 +271,14 @@ def export_to_json(file_path):
         ]
 
         # Write to file
+        if '..' in file_path:
+            raise Exception('Invalid file path')
         with open(file_path, 'w') as f:
             json.dump(rows, f, indent=4)
 
 def import_from_json(file_path):
+    if '..' in file_path:
+        raise Exception('Invalid file path')
     with open(file_path, 'r') as f:
         data = json.load(f)
 
