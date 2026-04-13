@@ -146,7 +146,7 @@ pillow==11.3.0
 platformdirs==4.5.0
 pluggy==1.6.0
 polyfactory==3.0.0
-portalocker==2.7.0
+portalocker==3.2.0
 posthog==5.4.0
 pre_commit==4.5.0
 primp==0.15.0
