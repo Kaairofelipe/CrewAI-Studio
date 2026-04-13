@@ -1,7 +1,17 @@
+import "dotenv/config";
 import bcrypt from "bcryptjs";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { ClaimStatus, LeadStage, PrismaClient, Role } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error("DATABASE_URL em falta: copie .env.example para .env na pasta web.");
+}
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString }),
+  log: ["warn", "error"],
+});
 
 async function main() {
   const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@kalainne.local";
