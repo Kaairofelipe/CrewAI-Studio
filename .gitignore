@@ -35,3 +35,7 @@ kalainne-suite/web/.env.local
 kalainne-suite/web/.next/
 kalainne-suite/desktop/dist/
 kalainne-suite/desktop/out/
+
+# Cópia local acidental do repositório (não versionar)
+CrewAI-Studio/
+write_test.tmp

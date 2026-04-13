@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/kalainne-suite/web"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "security"
+
+  - package-ecosystem: "npm"
+    directory: "/kalainne-suite/desktop"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 15
+    labels:
+      - "dependencies"
+      - "security"
