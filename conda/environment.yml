@@ -1,0 +1,9 @@
+# Base Conda para CrewAI Studio (reproduzível).
+# Uso: conda env create -f conda/environment.yml && conda activate crewai_env && pip install -r requirements.txt
+name: crewai_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - packaging

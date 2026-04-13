@@ -23,10 +23,9 @@ services:
       - db
     env_file:
       - .env
-    # environment:
-      # DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      # - DB_URL=postgresql://crewai_user:secret@db:5432/crewai
-      # - DB_URL=${DB_URL}
+    environment:
+      # Sobrescreve/define DB_URL para o servico Postgres deste compose (defina POSTGRES_* no .env)
+      DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     ports:
       - "8501:8501"
 

@@ -1,12 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Get the directory where the script is located
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
-# Activate the virtual environment
-source "$SCRIPT_DIR/venv/bin/activate"
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 cd "$SCRIPT_DIR"
 
-streamlit run app/app.py --server.headless True
+if [ ! -f "$SCRIPT_DIR/venv/bin/activate" ]; then
+  echo "Ambiente venv nao encontrado. Execute ./install_venv.sh primeiro."
+  exit 1
+fi
 
+# shellcheck source=/dev/null
+source "$SCRIPT_DIR/venv/bin/activate"
+
+unset PYTHONOPTIMIZE
+
+cd "$SCRIPT_DIR"
+exec streamlit run app/app.py --server.headless true

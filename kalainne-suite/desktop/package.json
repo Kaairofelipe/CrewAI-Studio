@@ -1,0 +1,14 @@
+{
+  "name": "kalainne-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplicativo desktop Kalaïnne Launch OS",
+  "main": "main.js",
+  "scripts": {
+    "dev": "electron .",
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^37.5.0"
+  }
+}

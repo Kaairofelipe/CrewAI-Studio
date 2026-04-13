@@ -12,7 +12,7 @@ class MyAgent:
         self.role = role or "Senior Researcher"
         self.backstory = backstory or "Driven by curiosity, you're at the forefront of innovation, eager to explore and share knowledge that could change the world."
         self.goal = goal or "Uncover groundbreaking technologies in AI"
-        self.temperature = temperature or 0.1
+        self.temperature = 0.1 if temperature is None else temperature
         self.allow_delegation = allow_delegation if allow_delegation is not None else False
         self.verbose = verbose if verbose is not None else True
         self.llm_provider_model = llm_providers_and_models()[0] if llm_provider_model is None else llm_provider_model

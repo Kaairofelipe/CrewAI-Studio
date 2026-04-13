@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import ast
 from utils import rnd_id
 from crewai_tools import CodeInterpreterTool,ScrapeElementFromWebsiteTool,TXTSearchTool,SeleniumScrapingTool,PDFSearchTool,MDXSearchTool,JSONSearchTool,GithubSearchTool,EXASearchTool,DOCXSearchTool,CSVSearchTool,ScrapeWebsiteTool, FileReadTool, DirectorySearchTool, DirectoryReadTool, CodeDocsSearchTool, YoutubeVideoSearchTool,SerperDevTool,YoutubeChannelSearchTool,WebsiteSearchTool
 from tools.CSVSearchToolEnhanced import CSVSearchToolEnhanced
@@ -43,6 +44,19 @@ class MyTool:
                     st.warning(f"Parameter '{param_name}' is mandatory for tool '{self.name}'")
                 return False
         return True
+
+def parse_optional_mapping(value):
+    if not value:
+        return None
+    if isinstance(value, dict):
+        return value
+    try:
+        parsed = ast.literal_eval(value)
+    except (ValueError, SyntaxError) as exc:
+        raise ValueError("Mapping parameters must be valid Python/JSON dictionaries") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError("Mapping parameters must evaluate to a dictionary")
+    return parsed
 
 class MyScrapeWebsiteTool(MyTool):
     def __init__(self, tool_id=None, website_url=None):
@@ -180,7 +194,7 @@ class MyGithubSearchTool(MyTool):
         return GithubSearchTool(
             github_repo=self.parameters.get('github_repo') if self.parameters.get('github_repo') else None,
             gh_token=self.parameters.get('gh_token'),
-            content_types=self.parameters.get('search_query').split(",") if self.parameters.get('search_query') else ["code", "repo", "pr", "issue"]
+            content_types=self.parameters.get('content_types').split(",") if self.parameters.get('content_types') else ["code", "repo", "pr", "issue"]
         )
 
 class MyJSONSearchTool(MyTool):
@@ -296,8 +310,8 @@ class MyCustomApiTool(MyTool):
     def create_tool(self) -> CustomApiTool:
         return CustomApiTool(
             base_url=self.parameters.get('base_url') if self.parameters.get('base_url') else None,
-            headers=eval(self.parameters.get('headers')) if self.parameters.get('headers') else None,
-            query_params=self.parameters.get('query_params') if self.parameters.get('query_params') else None
+            headers=parse_optional_mapping(self.parameters.get('headers')),
+            query_params=parse_optional_mapping(self.parameters.get('query_params'))
         )
 
 class MyCustomFileWriteTool(MyTool):

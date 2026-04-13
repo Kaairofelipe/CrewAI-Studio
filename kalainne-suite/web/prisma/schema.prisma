@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  admin
+  marketing
+  consultor
+  regulatorio
+}
+
+enum LeadStage {
+  novo
+  contato
+  proposta
+  negociacao
+  fechado
+  perdido
+}
+
+enum ClaimStatus {
+  seguro
+  validar
+  evitar
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String
+  passwordHash String
+  role         Role
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  leads        Lead[]     @relation("LeadOwner")
+  campaigns    Campaign[] @relation("CampaignOwner")
+  auditLogs    AuditLog[]
+}
+
+model Lead {
+  id            String    @id @default(cuid())
+  name          String
+  channel       String
+  audience      String
+  stage         LeadStage @default(novo)
+  notes         String?
+  lastContactAt DateTime?
+  ownerId       String
+  owner         User      @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Campaign {
+  id          String    @id @default(cuid())
+  title       String
+  phase       String
+  startDate   DateTime
+  endDate     DateTime
+  status      String    @default("draft")
+  objective   String
+  ownerId     String
+  owner       User      @relation("CampaignOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  checklist   ChecklistItem[]
+  aiExecutions AiExecution[]
+}
+
+model ChecklistItem {
+  id          String   @id @default(cuid())
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  title       String
+  ownerArea   String
+  dueDate     DateTime?
+  isDone      Boolean  @default(false)
+  priority    String   @default("Media")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ScriptTemplate {
+  id          String   @id @default(cuid())
+  audience    String
+  title       String
+  objective   String
+  content     String
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([audience, title])
+}
+
+model AiExecution {
+  id          String   @id @default(cuid())
+  campaignId  String?
+  campaign    Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  provider    String
+  modality    String
+  prompt      String
+  output      String?
+  status      String
+  createdAt   DateTime @default(now())
+}
+
+model ClaimRule {
+  id          String      @id @default(cuid())
+  productLine String
+  claimText   String
+  status      ClaimStatus
+  evidenceRef String?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([productLine, claimText])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  resource   String
+  result     String
+  ipAddress  String?
+  metaJson   String?
+  createdAt  DateTime @default(now())
+}

@@ -15,6 +15,13 @@ Welcome to CrewAI Studio! This application provides a user-friendly interface wr
 - **Single Page app export**: Feature to export crew as simple single page streamlit app.
 - **Threaded crew run**: Crews can run in background and can be stopped.
 
+## Documentação (este fork / Kalainne)
+
+- **[Espaço em disco e instalação](docs/DISK_AND_INSTALL.md)** — quantos GB o `venv`/Conda e o `node_modules` ocupam (medido; limite 15 GB).
+- **[WSL Ubuntu 24.04 + Miniconda](docs/WSL_UBUNTU_24_SETUP.md)** — setup em Linux/WSL.
+- **[Integrações (.env, Ollama, DB)](docs/INTEGRATIONS.md)** — variáveis CrewAI Studio vs Kalaïnne Suite.
+- **Kalaïnne Launch OS**: pasta `kalainne-suite/` (Next.js + Electron).
+
 ## Support CrewAI Studio
 
 Your support helps fund the development and growth of our project. Every contribution is greatly appreciated!
@@ -33,6 +40,13 @@ bc1qgsn45g02wran4lph5gsyqtk0k7t98zsg6qur0y
 <img src="https://raw.githubusercontent.com/strnad/CrewAI-Studio/main/img/ss5.png" alt="kickoff" style="width:50%;"/><img src="https://raw.githubusercontent.com/strnad/CrewAI-Studio/main/img/ss6.png" alt="kickoff" style="width:50%;"/>
 
 ## Installation
+
+### WSL2 Ubuntu 24.04 (desempenho e Miniconda)
+
+Use o filesystem Linux (`~/...`), não `/mnt/c/...`, para I/O mais rápido. Guia completo:
+
+- **[docs/WSL_UBUNTU_24_SETUP.md](docs/WSL_UBUNTU_24_SETUP.md)** — pré-requisitos APT, Miniconda em `./miniconda`, ambiente `crewai_env`, Kalaïnne Suite e Postgres.
+- Checagem rápida: `chmod +x scripts/check-wsl-prereqs.sh && ./scripts/check-wsl-prereqs.sh`
 
 ### Using Virtual Environment
 

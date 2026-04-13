@@ -1,0 +1,10 @@
+{
+  "name": "kalainne-suite",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "web:dev": "npm --prefix web run dev",
+    "web:build": "npm --prefix web run build",
+    "desktop:dev": "npm --prefix desktop run dev"
+  }
+}

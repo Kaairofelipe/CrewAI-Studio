@@ -1,5 +1,5 @@
-# Baseimage
-FROM python:3.12.10-slim-bookworm
+# Alinhado ao venv / Miniconda do projeto (Python 3.11)
+FROM python:3.11.12-slim-bookworm
 
 # Update Packages
 RUN apt update

@@ -38,11 +38,15 @@ class MyKnowledgeSource:
         """
         if not file_path:
             return None
-        else: #simply check if the file exists in the folder knowledge
-            if Path("knowledge", file_path).exists():
-                return file_path
-            else:
-                return None
+        path = Path(file_path)
+        if path.exists():
+            return str(path)
+
+        knowledge_path = Path("knowledge") / file_path
+        if knowledge_path.exists():
+            return str(knowledge_path)
+
+        return None
 
     def get_crewai_knowledge_source(self):
         # Import knowledge source classes based on type

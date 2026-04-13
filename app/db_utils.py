@@ -1,19 +1,42 @@
-import sqlite3
 import os
 import json
+from pathlib import Path
 from my_tools import TOOL_CLASSES
 from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
 
-# If you have an environment variable DB_URL for Postgres, use that. 
-# Otherwise, fallback to local SQLite file: 'sqlite:///crewai.db'
-DEFAULT_SQLITE_URL = 'sqlite:///crewai.db'
+load_dotenv()
+
+def _default_sqlite_url():
+    """Return a SQLite URL pointing to a writable local folder.
+
+    OneDrive syncs the project directory, which causes SQLite disk I/O errors
+    because the file locking mechanism is incompatible with cloud sync.
+    We store the database in %LOCALAPPDATA%\CrewAI-Studio (Windows) or
+    ~/.crewai-studio (other platforms) instead.
+    """
+    local_app_data = os.getenv("LOCALAPPDATA")
+    if local_app_data:
+        db_dir = Path(local_app_data) / "CrewAI-Studio"
+    else:
+        db_dir = Path.home() / ".crewai-studio"
+    db_dir.mkdir(parents=True, exist_ok=True)
+    db_path = db_dir / "crewai.db"
+    return f"sqlite:///{db_path.as_posix()}"
+
+# If you have an environment variable DB_URL for Postgres, use that.
+# Otherwise, store SQLite outside synced/OneDrive folders.
+DEFAULT_SQLITE_URL = _default_sqlite_url()
 DB_URL = os.getenv('DB_URL', DEFAULT_SQLITE_URL)
 
 # Create a SQLAlchemy Engine.
 # For example, DB_URL could be:
 #   "postgresql://username:password@hostname:5432/dbname"
-# or fallback to: "sqlite:///crewai.db"
-engine = create_engine(DB_URL, echo=False)
+# or fallback to the local SQLite path above.
+_engine_kwargs: dict = {"echo": False}
+if DB_URL.startswith("sqlite:///"):
+    _engine_kwargs["connect_args"] = {"check_same_thread": False, "timeout": 30}
+engine = create_engine(DB_URL, **_engine_kwargs)
 
 def get_db_connection():
     # conn = sqlite3.connect(DB_NAME)

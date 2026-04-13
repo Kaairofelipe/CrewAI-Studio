@@ -1,14 +1,9 @@
 import os
 from dotenv import load_dotenv
 import streamlit as st
-from langchain_openai import ChatOpenAI
-from langchain_groq import ChatGroq
-from langchain_anthropic import ChatAnthropic
 from crewai import LLM
-from langchain_openai.chat_models.base import BaseChatOpenAI
-from litellm import completion
 
-def load_secrets_fron_env():
+def load_secrets_from_env():
     load_dotenv(override=True)
     if "env_vars" not in st.session_state:
         st.session_state.env_vars = {
@@ -48,7 +43,12 @@ def create_openai_llm(model, temperature):
     api_base = os.getenv("OPENAI_API_BASE")
 
     if api_key:
-        return LLM(model=model, temperature=temperature, base_url=api_base)
+        return LLM(
+            model=model,
+            temperature=temperature,
+            api_key=api_key,
+            base_url=api_base,
+        )
     else:
         raise ValueError("OpenAI API key not set in .env file")
 
@@ -59,10 +59,10 @@ def create_anthropic_llm(model, temperature):
     api_key = os.getenv("ANTHROPIC_API_KEY")
 
     if api_key:
-        return ChatAnthropic(
-            anthropic_api_key=api_key,
-            model_name=model,
+        return LLM(
+            model=model,
             temperature=temperature,
+            api_key=api_key,
             max_tokens=4095,
         )
     else:
@@ -75,7 +75,12 @@ def create_groq_llm(model, temperature):
     api_key = os.getenv("GROQ_API_KEY")
 
     if api_key:
-        return ChatGroq(groq_api_key=api_key, model_name=model, temperature=temperature, max_tokens=4095)
+        return LLM(
+            model=model,
+            temperature=temperature,
+            api_key=api_key,
+            max_tokens=4095,
+        )
     else:
         raise ValueError("Groq API key not set in .env file")
 
@@ -86,7 +91,12 @@ def create_ollama_llm(model, temperature):
             "OPENAI_API_KEY": "ollama",  # Nastaví OpenAI API klíč na "ollama"
             "OPENAI_API_BASE": host,    # Nastaví OpenAI API Base na hodnotu OLLAMA_HOST
         })
-        return LLM(model=model, temperature=temperature, base_url=host)
+        return LLM(
+            model=model,
+            temperature=temperature,
+            api_key="ollama",
+            base_url=host,
+        )
     else:
         raise ValueError("Ollama Host is not set in .env file")
 
@@ -118,10 +128,11 @@ def create_lmstudio_llm(model, temperature):
     api_base = os.getenv("OPENAI_API_BASE")
 
     if api_base:
-        return ChatOpenAI(
-            openai_api_key="lm-studio",
-            openai_api_base=api_base,
+        return LLM(
+            model=model,
             temperature=temperature,
+            api_key="lm-studio",
+            base_url=api_base,
             max_tokens=4095,
         )
     else:
@@ -170,3 +181,7 @@ def create_llm(provider_and_model, temperature=0.15):
         return llm
     else:
         raise ValueError(f"LLM provider {provider} is not recognized or not supported")
+
+
+# Retrocompat (nome antigo com typo)
+load_secrets_fron_env = load_secrets_from_env

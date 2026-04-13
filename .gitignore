@@ -2,6 +2,9 @@ venv
 venv/
 miniconda/
 miniconda
+_pip_size_probe/
+_pip_wheels/
+crewai.db-journal
 *.db
 flat.txt
 flatten_files_for_gpt.py
@@ -16,8 +19,19 @@ app/__pycache__
 app/__pycache__/*
 app/tools/__pycache__
 app/tools/__pycache__/*
-data
-data/*
+# Apenas pasta `data` na raiz do repo (evita ignorar kalainne-suite/web/src/data)
+/data
+/data/*
 db/
 db/*
 stop_venv.bat
+node_modules/
+**/node_modules/
+*.log
+.DS_Store
+
+# Kalaïnne suite local artifacts
+kalainne-suite/web/.env.local
+kalainne-suite/web/.next/
+kalainne-suite/desktop/dist/
+kalainne-suite/desktop/out/

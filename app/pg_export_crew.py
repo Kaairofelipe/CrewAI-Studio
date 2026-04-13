@@ -5,6 +5,7 @@ import os
 import re
 import json
 import shutil
+import textwrap
 import db_utils
 from utils import escape_quotes
 from my_tools import TOOL_CLASSES
@@ -94,10 +95,7 @@ Task(
         
         app_content = f"""
 import streamlit as st
-from crewai import Agent, Task, Crew, Process
-from langchain_openai import ChatOpenAI
-from langchain_groq import ChatGroq
-from langchain_anthropic import ChatAnthropic
+from crewai import Agent, Task, Crew, Process, LLM
 from dotenv import load_dotenv
 import os
 from crewai_tools import *
@@ -110,10 +108,8 @@ load_dotenv()
 
 def create_lmstudio_llm(model, temperature):
     api_base = os.getenv('LMSTUDIO_API_BASE')
-    os.environ["OPENAI_API_KEY"] = "lm-studio"
-    os.environ["OPENAI_API_BASE"] = api_base
     if api_base:
-        return ChatOpenAI(openai_api_key='lm-studio', openai_api_base=api_base, temperature=temperature)
+        return LLM(model=model, api_key='lm-studio', base_url=api_base, temperature=temperature)
     else:
         raise ValueError("LM Studio API base not set in .env file")
 
@@ -124,21 +120,21 @@ def create_openai_llm(model, temperature):
     api_key = os.getenv('OPENAI_API_KEY')
     api_base = os.getenv('OPENAI_API_BASE', 'https://api.openai.com/v1/')
     if api_key:
-        return ChatOpenAI(openai_api_key=api_key, openai_api_base=api_base, model_name=model, temperature=temperature)
+        return LLM(model=model, api_key=api_key, base_url=api_base, temperature=temperature)
     else:
         raise ValueError("OpenAI API key not set in .env file")
 
 def create_groq_llm(model, temperature):
     api_key = os.getenv('GROQ_API_KEY')
     if api_key:
-        return ChatGroq(groq_api_key=api_key, model_name=model, temperature=temperature)
+        return LLM(model=model, api_key=api_key, temperature=temperature)
     else:
         raise ValueError("Groq API key not set in .env file")
 
 def create_anthropic_llm(model, temperature):
     api_key = os.getenv('ANTHROPIC_API_KEY')
     if api_key:
-        return ChatAnthropic(anthropic_api_key=api_key, model_name=model, temperature=temperature)
+        return LLM(model=model, api_key=api_key, temperature=temperature)
     else:
         raise ValueError("Anthropic API key not set in .env file")
 
@@ -275,8 +271,12 @@ streamlit run app.py --server.headless True
             f.write(run_sh_content)
             os.chmod(os.path.join(output_dir, 'run.sh'), 0o755)
 
-        install_bat_content = """
+        install_bat_content = textwrap.dedent("""
 @echo off
+setlocal
+
+set "SCRIPT_DIR=%~dp0"
+cd /d "%SCRIPT_DIR%"
 
 :: Create a virtual environment
 python -m venv venv || (
@@ -285,7 +285,7 @@ python -m venv venv || (
 )
 
 :: Activate the virtual environment
-call venv\\Scripts\\activate || (
+call "%SCRIPT_DIR%venv\\Scripts\\activate.bat" || (
     echo Failed to activate venv
     exit /b 1
 )
@@ -297,22 +297,28 @@ pip install -r requirements.txt || (
 )
 
 echo Installation completed successfully.
-"""
+""").strip() + "\n"
         with open(os.path.join(output_dir, 'install.bat'), 'w') as f:
             f.write(install_bat_content)
 
-        run_bat_content = """
+        run_bat_content = textwrap.dedent("""
 @echo off
+setlocal
+
+set "SCRIPT_DIR=%~dp0"
 
 :: Activate the virtual environment
-call venv\\Scripts\\activate || (
+call "%SCRIPT_DIR%venv\\Scripts\\activate.bat" || (
     echo Failed to activate venv
     exit /b 1
 )
 
 :: Run the Streamlit app
+cd /d "%SCRIPT_DIR%"
+set "PYTHONOPTIMIZE="
+
 streamlit run app.py --server.headless true
-"""
+""").strip() + "\n"
         with open(os.path.join(output_dir, 'run.bat'), 'w') as f:
             f.write(run_bat_content)
 
