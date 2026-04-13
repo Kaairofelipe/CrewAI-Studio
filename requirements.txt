@@ -243,7 +243,7 @@ virtualenv==20.36.1
 watchdog==6.0.0
 watchfiles==1.1.1
 websocket-client==1.9.0
-websockets==15.0.1
+websockets==16.0
 xlsxwriter==3.2.9
 xxhash==3.6.0
 yarl==1.22.0
