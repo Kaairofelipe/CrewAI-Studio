@@ -98,7 +98,7 @@ langchain-openai==1.1.0
 langchain-text-splitters==1.0.0
 langgraph==1.0.3
 langgraph-checkpoint==3.0.1
-langgraph-prebuilt==1.0.5
+langgraph-prebuilt==1.0.9
 langgraph-sdk==0.2.10
 langsmith==0.4.47
 latex2mathml==3.78.1
