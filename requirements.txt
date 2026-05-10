@@ -148,7 +148,7 @@ pluggy==1.6.0
 polyfactory==3.0.0
 portalocker==2.7.0
 posthog==5.4.0
-pre_commit==4.5.0
+pre_commit==4.5.1
 primp==0.15.0
 propcache==0.4.1
 protobuf==6.33.5
